@@ -1,0 +1,24 @@
+{
+  "name": "sapb1-cp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syedhussim/sapb1-cp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/syedhussim/sapb1-cp/issues"
+  },
+  "homepage": "https://github.com/syedhussim/sapb1-cp#readme",
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "typescript": "^4.9.5"
+  }
+}
