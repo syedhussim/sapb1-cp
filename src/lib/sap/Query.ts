@@ -39,7 +39,7 @@ export class Query{
         }));
 
         if(response.statusCode == 200){
-            return JSON.parse(response.data).value;
+            return JSON.parse(response.data).value
         }
     }
 }
