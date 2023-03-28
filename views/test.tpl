@@ -20,9 +20,9 @@
     </template>
 
     <template id="order-row-template">
-        <div class="data-row" data-order_number="order_number" on-click="viewOrder">
-            <label data-name="order_number"></label>
-            <label data-name="total"></label>
+        <div class="data-row fx-jc-sb" data-doc_entry="DocEntry" on-click="viewOrder">
+            <label data-name="DocNum"></label>
+            <label data-name="DocTotalFc"></label>
         </div>
     </template>
 

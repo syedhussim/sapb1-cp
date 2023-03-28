@@ -19,13 +19,25 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield res.view('/views/test.tpl');
 }));
 app.get('/api/orders.json', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
-    let orders = yield sapClient.query('$crossjoin(Orders,Orders/DocumentLines)', '$expand=Orders($select=DocEntry, DocNum),Orders/DocumentLines($select=ItemCode,LineNum,ItemDescription)&$filter=Orders/DocEntry eq Orders/DocumentLines/DocEntry and Orders/DocNum eq 104099')
-        .execute();
-    res.json(orders);
+    try {
+        let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
+        let orders = yield sapClient.resource('Orders')
+            //.select('DocEntry,DocNum,DocCurrency,DocTotalFc,Address,NumAtCard')
+            //.orderBy('CreationDate', 'desc')
+            .list();
+        res.json(orders);
+    }
+    catch (e) {
+        console.log(e);
+    }
 }));
 app.get('/api/order/get.json', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.json({ order_number: '12345', total: 23.00, address: '123456788 avenue road' });
+    let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
+    let orders = yield sapClient.query('$crossjoin(Orders,Orders/DocumentLines)', `$expand=Orders($select=DocEntry, DocNum),Orders/DocumentLines($select=ItemCode,LineNum,ItemDescription)
+        &$filter=Orders/DocEntry eq Orders/DocumentLines/DocEntry 
+        and Orders/DocNum eq 104099`)
+        .execute();
+    res.json(orders);
 }));
 // app.post('/', (req : Request, res : Response) =>{
 //     res.json({

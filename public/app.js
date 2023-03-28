@@ -29,6 +29,10 @@ class AppBase{
 
                 let val = attribute.nodeValue;
 
+                if(data.hasOwnProperty(attribute.nodeValue)){
+                    val = data[attribute.nodeValue];
+                }
+
                 switch(attribute.nodeName){
                     case 'data-src':
                         node.src = data[attribute.nodeValue] || val;

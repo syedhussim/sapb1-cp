@@ -23,6 +23,11 @@ export class Resource{
         return this;
     }
 
+    orderBy(field : string, dir : string) : Resource{
+        this._query.push('&$orderby=' + encodeURIComponent(field + ' ' + dir));
+        return this;
+    }
+
     async list(){
 
         let cookie : string = '';
@@ -55,5 +60,7 @@ export class Resource{
         if(response.statusCode == 200){
             return JSON.parse(response.data).value;
         }
+
+        throw new Error(response.data);
     }
 }

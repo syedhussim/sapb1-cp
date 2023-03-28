@@ -26,6 +26,10 @@ class Resource {
         this._query.push('&$skip=' + skip);
         return this;
     }
+    orderBy(field, dir) {
+        this._query.push('&$orderby=' + encodeURIComponent(field + ' ' + dir));
+        return this;
+    }
     list() {
         return __awaiter(this, void 0, void 0, function* () {
             let cookie = '';
@@ -52,6 +56,7 @@ class Resource {
             if (response.statusCode == 200) {
                 return JSON.parse(response.data).value;
             }
+            throw new Error(response.data);
         });
     }
 }
