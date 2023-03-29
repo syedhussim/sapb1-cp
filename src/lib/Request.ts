@@ -5,6 +5,7 @@ export class Request{
     private readonly _request : IncomingMessage;
     private readonly _url : URL;
     private readonly _method : HttpMethod;
+    private readonly _query : URLSearchParams;
 
     constructor(request : IncomingMessage){
 
@@ -12,6 +13,7 @@ export class Request{
 
         this._request = request;
         this._url = new URL(protocol + '://' + request.headers.host + request.url);
+        this._query = new URLSearchParams(this._url.search);
         this._method = this._toHttpMethod(request.method?.toUpperCase() || 'GET');
     }
 
@@ -21,6 +23,10 @@ export class Request{
 
     method(){
         return this._method;
+    }
+
+    query(){
+        return this._query;
     }
 
     private _toHttpMethod(method : string){

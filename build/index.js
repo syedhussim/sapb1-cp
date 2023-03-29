@@ -22,8 +22,8 @@ app.get('/api/orders.json', (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
         let orders = yield sapClient.resource('Orders')
-            //.select('DocEntry,DocNum,DocCurrency,DocTotalFc,Address,NumAtCard')
-            //.orderBy('CreationDate', 'desc')
+            .select('DocEntry,DocNum,DocCurrency,DocTotalFc,Address,NumAtCard')
+            .orderBy('CreationDate', 'desc')
             .list();
         res.json(orders);
     }
@@ -32,12 +32,16 @@ app.get('/api/orders.json', (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 }));
 app.get('/api/order/get.json', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
-    let orders = yield sapClient.query('$crossjoin(Orders,Orders/DocumentLines)', `$expand=Orders($select=DocEntry, DocNum),Orders/DocumentLines($select=ItemCode,LineNum,ItemDescription)
-        &$filter=Orders/DocEntry eq Orders/DocumentLines/DocEntry 
-        and Orders/DocNum eq 104099`)
-        .execute();
-    res.json(orders);
+    if (req.query().has('doc_entry')) {
+        let docEntry = req.query().get('doc_entry');
+        let sapClient = yield Client_1.Client.session("manager", "harshal", "DEV_SADP");
+        let orders = yield sapClient.query('$crossjoin(Orders,Orders/DocumentLines)', `$expand=Orders($select=DocEntry, DocNum),Orders/DocumentLines($select=ItemCode,LineNum,ItemDescription)
+            &$filter=Orders/DocEntry eq Orders/DocumentLines/DocEntry 
+            and Orders/DocEntry eq ${docEntry}`)
+            .execute();
+        console.log(orders);
+        res.json(orders);
+    }
 }));
 // app.post('/', (req : Request, res : Response) =>{
 //     res.json({

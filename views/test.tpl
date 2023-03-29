@@ -62,7 +62,9 @@
 
             async viewOrder(sender){
 
-                let result = await fetch('/api/order/get.json');
+                let docEntry = sender.dataset.doc_entry;
+
+                let result = await fetch('/api/order/get.json?doc_entry=' + docEntry);
                 let order = await result.json();
 
                 this.clearRender('data', 'order-header-template', order);
