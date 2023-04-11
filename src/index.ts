@@ -7,21 +7,22 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
 
 const app = new Application();
 
-app.load((req : Request, res : Response) =>{
-
+app.load(async(registry : Map<string, any>) => {
+    registry.set('sapClient', await Client.session("manager", "harshal", "SADP"));
 });
 
 app.get('/', async(req : Request, res : Response) => {
-    await res.view('/views/test.tpl');
+    await res.view('/views/index.tpl');
 });
 
 app.get('/api/orders.json', async(req : Request, res : Response) => {
 
     try{
-        let sapClient = await Client.session("manager", "harshal", "DEV_SADP");
+
+        let sapClient = req.registry().get('sapClient');
 
         let orders = await sapClient.resource('Orders')
-            .select('DocEntry,DocNum,DocCurrency,DocTotalFc,Address,NumAtCard')
+            .select('DocEntry,DocNum,DocCurrency,DocTotalFc,Address,DocDueDate')
             .orderBy('CreationDate', 'desc')
             .list();
 
@@ -34,28 +35,30 @@ app.get('/api/orders.json', async(req : Request, res : Response) => {
 
 app.get('/api/order/get.json', async(req : Request, res : Response) => {
 
-
     if(req.query().has('doc_entry')){
 
         let docEntry = req.query().get('doc_entry');
 
-        let sapClient = await Client.session("manager", "harshal", "DEV_SADP");
-        let orders = await sapClient.query(
-            '$crossjoin(Orders,Orders/DocumentLines)', `$expand=Orders($select=DocEntry, DocNum),Orders/DocumentLines($select=ItemCode,LineNum,ItemDescription)
+        let sapClient = req.registry().get('sapClient');
+
+        let rows = await sapClient.query(
+            '$crossjoin(Orders,Orders/DocumentLines)', `$expand=Orders($select=DocEntry,DocNum,DocDueDate,DocCurrency,DocTotalFc,Address,NumAtCard),Orders/DocumentLines($select=ItemCode,ItemDescription,Currency,Price,Quantity)
             &$filter=Orders/DocEntry eq Orders/DocumentLines/DocEntry 
             and Orders/DocEntry eq ${docEntry}`)
             .execute();
-            console.log(orders);
-        res.json(orders);
+
+        let order : any = {
+            Lines : []
+        };
+
+        for(let row of rows){
+            order = Object.assign(order, row.Orders);
+            order.Lines.push(row['Orders/DocumentLines']);
+        }
+
+        res.json(order);
     }
 });
-
-// app.post('/', (req : Request, res : Response) =>{
-//     res.json({
-//         success : 200,
-//         msg : 'done'
-//     });
-// });
 
 app.start({});
 

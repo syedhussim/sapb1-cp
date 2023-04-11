@@ -18,11 +18,11 @@ const promises_1 = require("fs/promises");
 const path = require("path");
 class Application {
     constructor() {
-        this._middleware = [];
+        this._registry = new Map();
         this._routes = [];
     }
     load(callable) {
-        this._middleware.push(callable);
+        callable(this._registry);
         return this;
     }
     get(path, callable) {
@@ -37,7 +37,7 @@ class Application {
     }
     start(config) {
         (0, http_1.createServer)((req, res) => __awaiter(this, void 0, void 0, function* () {
-            let request = new Request_1.Request(req);
+            let request = new Request_1.Request(req, this._registry);
             let response = new Response_1.Response(res);
             yield this._tryFile(request, response);
             if (!response.flushed()) {

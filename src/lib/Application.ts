@@ -7,16 +7,16 @@ import path = require('path');
 
 export class Application {
 
-    private readonly _middleware : CallableFunction[];
+    private readonly _registry : Map<string, any>;
     private readonly _routes : Route[];
 
     constructor(){
-        this._middleware = [];
+        this._registry = new Map();
         this._routes = [];
     }
 
     load(callable : CallableFunction) : Application{
-        this._middleware.push(callable);
+        callable(this._registry);
         return this 
     }
 
@@ -36,7 +36,7 @@ export class Application {
 
         createServer(async(req, res) => {
 
-            let request = new Request(req);
+            let request = new Request(req, this._registry);
             let response = new Response(res);
 
             await this._tryFile(request, response);

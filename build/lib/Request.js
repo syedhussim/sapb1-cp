@@ -2,13 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HttpMethod = exports.Request = void 0;
 class Request {
-    constructor(request) {
+    constructor(request, registry) {
         var _a;
         const protocol = request.socket.localPort == 443 ? 'https' : 'http';
         this._request = request;
+        this._registry = registry;
         this._url = new URL(protocol + '://' + request.headers.host + request.url);
         this._query = new URLSearchParams(this._url.search);
         this._method = this._toHttpMethod(((_a = request.method) === null || _a === void 0 ? void 0 : _a.toUpperCase()) || 'GET');
+    }
+    registry() {
+        return this._registry;
     }
     url() {
         return this._url;

@@ -3,18 +3,24 @@ import { IncomingMessage } from 'http';
 export class Request{
 
     private readonly _request : IncomingMessage;
+    private readonly _registry : Map<string, any>;
     private readonly _url : URL;
     private readonly _method : HttpMethod;
     private readonly _query : URLSearchParams;
 
-    constructor(request : IncomingMessage){
+    constructor(request : IncomingMessage, registry : Map<string, any>){
 
         const protocol = request.socket.localPort == 443 ? 'https' : 'http';
 
         this._request = request;
+        this._registry = registry;
         this._url = new URL(protocol + '://' + request.headers.host + request.url);
         this._query = new URLSearchParams(this._url.search);
         this._method = this._toHttpMethod(request.method?.toUpperCase() || 'GET');
+    }
+
+    registry() : Map<string, any>{
+        return this._registry
     }
 
     url(){
